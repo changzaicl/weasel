@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "WeaselPanel.h"
 
 #include <utility>
@@ -1155,6 +1155,11 @@ void WeaselPanel::MoveTo(RECT const& rc) {
               rc.left < m_inputPos.left && m_composing_count > 5)) {
     // in some apps like word 2021, with inline_preedit set,
     // bottom of rc would flicker 1 px or 2, make the candidate flickering
+    
+    if (m_status.composing && !m_composing_moved) {
+      m_composing_moved = true;
+    }
+
     m_inputPos = rc;
     m_inputPos.OffsetRect(-x_offeset, 6);
     // buffer current m_istorepos status
