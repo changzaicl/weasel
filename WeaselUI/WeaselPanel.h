@@ -145,4 +145,13 @@ class WeaselPanel
   int m_hoverIndex = -1;
   HMONITOR m_hMonitor = NULL;
   bool m_redraw_by_monitor_change = false;
+
+  long
+      m_composing_count;  // ��¼ composing ״̬�£����� MoveTo �����Ĵ���
+  long m_composing_count1_pos;  // composing ״̬�� �� ��¼�״ν���
+                                       // MoveTo ����ʱ rc.left ��ֵ
+  // static unsigned int m_composing_count5_pos;  // composing ״̬�� ��
+  // ��5�ν���
+  //                                             // MoveTo ����ʱ rc.left ��ֵ
+  bool m_composing_moved;  // �� composing ״̬�£� �Ƿ��Ѿ��ƶ���
 };
