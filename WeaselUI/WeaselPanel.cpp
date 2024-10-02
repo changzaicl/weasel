@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "WeaselPanel.h"
 
 #include <utility>
@@ -64,7 +64,10 @@ WeaselPanel::WeaselPanel(weasel::UI& ui)
       hide_candidates(false),
       pDWR(ui.pdwr()),
       _UICallback(ui.uiCallback()),
-      _m_gdiplusToken(0) {
+      _m_gdiplusToken(0),
+      m_composing_count(0),
+      m_composing_count1_pos(0),
+      m_composing_moved(false) {
   m_iconDisabled.LoadIconW(IDI_RELOAD, STATUS_ICON_SIZE, STATUS_ICON_SIZE,
                            LR_DEFAULTCOLOR);
   m_iconEnabled.LoadIconW(IDI_ZH, STATUS_ICON_SIZE, STATUS_ICON_SIZE,
@@ -1112,6 +1115,24 @@ void WeaselPanel::MoveTo(RECT const& rc) {
   if (!m_layout)
     return;  // avoid handling nullptr in _RepositionWindow
   m_redraw_by_monitor_change = false;
+
+  if (m_status.composing) {
+    ++m_composing_count;
+  } else {
+    m_composing_count = 0;
+    m_composing_moved = false;
+  }
+
+  if (1 == m_composing_count) {
+    m_composing_count1_pos = rc.left;
+  }
+
+  // if (5 == m_composing_count) {
+  //  m_composing_count5_pos = rc.left;
+  //}
+
+  const int x_offeset = 2;
+
   // if ascii_tip_follow_cursor set, move tip icon to mouse cursor
   if (m_style.ascii_tip_follow_cursor && m_ctx.empty() &&
       (!m_status.composing) && m_layout->ShouldDisplayStatusIcon()) {
@@ -1122,13 +1143,25 @@ void WeaselPanel::MoveTo(RECT const& rc) {
     m_inputPos = irc;
     _RepositionWindow(true);
     RedrawWindow();
-  } else if (!(rc.left == m_inputPos.left && rc.bottom != m_inputPos.bottom &&
-               abs(rc.bottom - m_inputPos.bottom) < 6) ||
-             m_layout->ShouldDisplayStatusIcon()) {
+  } else if (!m_status.composing ||  // 除这个条件外，其他条件都是在 composing
+                                     // 状态下执行的
+             ((abs(rc.left - m_composing_count1_pos) != x_offeset ||   // wps
+               abs(rc.left - m_composing_count1_pos) != x_offeset) &&  // chrome
+              (5 == m_composing_count &&
+               !m_composing_moved)) ||  // m_composing_count == 5
+                                        // 的时候位置是准确的
+             abs(rc.bottom - m_inputPos.bottom) != 6 ||
+             (abs(rc.bottom - m_inputPos.bottom) == 6 &&
+              rc.left < m_inputPos.left && m_composing_count > 5)) {
     // in some apps like word 2021, with inline_preedit set,
     // bottom of rc would flicker 1 px or 2, make the candidate flickering
+
+    if (m_status.composing && !m_composing_moved) {
+      m_composing_moved = true;
+    }
+
     m_inputPos = rc;
-    m_inputPos.OffsetRect(0, 6);
+    m_inputPos.OffsetRect(-x_offeset, 6);
     // buffer current m_istorepos status
     bool m_istorepos_buf = m_istorepos;
     // with parameter to avoid vertical flicker
@@ -1190,9 +1223,7 @@ void WeaselPanel::_RepositionWindow(const bool& adj) {
   if (x < rcWorkArea.left)
     x = rcWorkArea.left;  // over workarea left
   // show panel above the input focus if we're around the bottom
-  if (y > rcWorkArea.bottom || m_sticky) {
-    if (!m_sticky)
-      m_sticky = true;
+  if (y > rcWorkArea.bottom) {
     y = m_inputPos.top - height - 6;  // over workarea bottom
     if (DPI_SCALE(m_style.shadow_radius) &&
         DPI_SCALE(m_style.shadow_offset_y) > 0)

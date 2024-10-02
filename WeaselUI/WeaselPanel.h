@@ -145,4 +145,12 @@ class WeaselPanel
   int m_hoverIndex = -1;
   HMONITOR m_hMonitor = NULL;
   bool m_redraw_by_monitor_change = false;
+
+  long m_composing_count;       // 记录 composing 状态下，进入 MoveTo 函数的次数
+  long m_composing_count1_pos;  // composing 状态下 ， 记录首次进入
+                                // MoveTo 函数时 rc.left 的值
+  // static unsigned int m_composing_count5_pos;  // composing 状态下 ，
+  // 第5次进入
+  //                                             // MoveTo 函数时 rc.left 的值
+  bool m_composing_moved;  // 在 composing 状态下， 是否已经移动过
 };
