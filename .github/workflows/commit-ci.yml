@@ -167,7 +167,8 @@ jobs:
       - name: Copy Rime files
         shell: pwsh
         run: |
-          .\github.install.bat
+          $ErrorActionPreference = 'Stop'
+          .\get-rime.ps1 -tag latest -use dev
 
       - name: Build data
         run: |
