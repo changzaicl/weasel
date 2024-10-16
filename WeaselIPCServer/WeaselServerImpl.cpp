@@ -63,6 +63,15 @@ LRESULT ServerImpl::OnColorChange(UINT uMsg,
   return 0;
 }
 
+LRESULT ServerImpl::OnDisplayChange(UINT uMsg,
+                                    WPARAM wParam,
+                                    LPARAM lParam,
+                                    BOOL& bHandled) {
+  m_pRequestHandler->UpdateDisplayChange();
+  bHandled = true;
+  return 0;
+}
+
 LRESULT ServerImpl::OnCreate(UINT uMsg,
                              WPARAM wParam,
                              LPARAM lParam,

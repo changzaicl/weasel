@@ -42,6 +42,8 @@ STDAPI WeaselTSF::DoEditSession(TfEditCookie ec) {
   }
 
   _UpdateUI(*context, _status);
+  if (_cand->style().force_update)
+    _cand->style().force_update = false;
 
   return TRUE;
 }

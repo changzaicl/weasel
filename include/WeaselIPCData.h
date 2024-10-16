@@ -291,6 +291,7 @@ struct UIStyle {
   int client_caps;
   int baseline;
   int linespacing;
+  bool force_update;
 
   UIStyle()
       : font_face(),
@@ -361,10 +362,12 @@ struct UIStyle {
         nextpage_color(0),
         baseline(0),
         linespacing(0),
+        force_update(false),
         client_caps(0) {}
   bool operator!=(const UIStyle& st) {
     return (
-        align_type != st.align_type || antialias_mode != st.antialias_mode ||
+        force_update != st.force_update || align_type != st.align_type ||
+        antialias_mode != st.antialias_mode ||
         preedit_type != st.preedit_type || layout_type != st.layout_type ||
         vertical_text_left_to_right != st.vertical_text_left_to_right ||
         vertical_text_with_wrap != st.vertical_text_with_wrap ||
@@ -500,6 +503,7 @@ void serialize(Archive& ar, weasel::UIStyle& s, const unsigned int version) {
   ar & s.client_caps;
   ar & s.baseline;
   ar & s.linespacing;
+  ar & s.force_update;
 }
 
 template <typename Archive>

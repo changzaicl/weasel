@@ -28,12 +28,17 @@ class ServerImpl : public CWindowImpl<ServerImpl, CWindow, ServerWinTraits>
   MESSAGE_HANDLER(WM_DWMCOLORIZATIONCOLORCHANGED, OnColorChange)
   MESSAGE_HANDLER(WM_SETTINGCHANGE, OnColorChange)
   MESSAGE_HANDLER(WM_COMMAND, OnCommand)
+  MESSAGE_HANDLER(WM_DISPLAYCHANGE, OnDisplayChange)
   END_MSG_MAP()
 
   LRESULT OnColorChange(UINT uMsg,
                         WPARAM wParam,
                         LPARAM lParam,
                         BOOL& bHandled);
+  LRESULT OnDisplayChange(UINT uMsg,
+                          WPARAM wParam,
+                          LPARAM lParam,
+                          BOOL& bHandled);
   LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
   LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
   LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

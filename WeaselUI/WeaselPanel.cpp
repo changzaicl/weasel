@@ -178,7 +178,14 @@ void WeaselPanel::_InitFontRes(bool forced) {
   // prepare d2d1 resources
   // if style changed, or dpi changed, or pDWR NULL, re-initialize directwrite
   // resources
-  if (forced || (pDWR == NULL) || (m_ostyle != m_style) || (dpiX != dpi)) {
+  if (m_style.force_update) {
+    OutputDebugString(L"forced update requested");
+    pDWR = std::make_shared<DirectWriteResources>(m_style, dpiX);
+    pDWR->pRenderTarget->SetTextAntialiasMode(
+        (D2D1_TEXT_ANTIALIAS_MODE)m_style.antialias_mode);
+    m_style.force_update = false;
+  } else if (forced || (pDWR == NULL) || (m_ostyle != m_style) ||
+             (dpiX != dpi)) {
     if (pDWR)
       pDWR->InitResources(m_style, dpiX);
     else

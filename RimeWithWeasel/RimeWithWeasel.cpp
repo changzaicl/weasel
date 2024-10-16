@@ -199,6 +199,13 @@ void RimeWithWeaselHandler::Finalize() {
   rime_api->finalize();
 }
 
+void RimeWithWeaselHandler::UpdateDisplayChange() {
+  for (auto& pair : m_session_status_map) {
+    pair.second.__synced = false;
+    pair.second.style.force_update = true;
+  }
+}
+
 DWORD RimeWithWeaselHandler::FindSession(WeaselSessionId ipc_id) {
   if (m_disabled)
     return 0;
@@ -979,6 +986,7 @@ bool RimeWithWeaselHandler::_Respond(WeaselSessionId ipc_id, EatLine eat) {
     messages.push_back(std::string("style=") +
                        wstring_to_string(ss.str().c_str(), CP_UTF8) + '\n');
     session_status.__synced = true;
+    session_status.style.force_update = false;
   }
 
   // summarize

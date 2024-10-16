@@ -65,6 +65,7 @@ struct RequestHandler {
   virtual ~RequestHandler() {}
   virtual void Initialize() {}
   virtual void Finalize() {}
+  virtual void UpdateDisplayChange() {}
   virtual DWORD FindSession(DWORD session_id) { return 0; }
   virtual DWORD AddSession(LPWSTR buffer, EatLine eat = 0) { return 0; }
   virtual DWORD RemoveSession(DWORD session_id) { return 0; }
