@@ -62,7 +62,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID pvReserved) {
     case DLL_PROCESS_ATTACH:
       g_hInst = hInstance;
       SetUnhandledExceptionFilter(_UnhandledExceptionFilter);
-      if (!InitializeCriticalSectionAndSpinCount(&g_cs, 0))
+      if (!InitializeCriticalSectionAndSpinCount(&g_cs, 4000))
         return FALSE;
       break;
     case DLL_PROCESS_DETACH:
