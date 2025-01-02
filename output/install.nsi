@@ -302,13 +302,13 @@ program_files:
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
   ; run as user...
-  IfSilent +2
-    ExecWait "$INSTDIR\WeaselDeployer.exe /install"
-    Goto deploy_done
+  IfSilent deploy_silently
+  ExecWait "$INSTDIR\WeaselDeployer.exe /install"
+  GoTo deploy_done
 
+  deploy_silently:
   ExecWait "$INSTDIR\WeaselDeployer.exe /deploy"
   deploy_done:
-  ; ...
 
   ; don't redirect on 64 bit system for auto run setting
   ${If} ${IsNativeARM64}
