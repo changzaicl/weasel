@@ -113,10 +113,10 @@ void _LoadAppOptions(RimeConfig* config, AppOptionsByAppName& app_options);
 void _RefreshTrayIcon(const RimeSessionId session_id,
                       const std::function<void()> _UpdateUICallback) {
   // Dangerous, don't touch
-  static char app_name[50];
-  rime_api->get_property(session_id, "client_app", app_name,
-                         sizeof(app_name) - 1);
-  if (u8tow(app_name) == std::wstring(L"explorer.exe"))
+  static char app_name[256] = {0};
+  auto ret = rime_api->get_property(session_id, "client_app", app_name,
+                                    sizeof(app_name) - 1);
+  if (!ret || u8tow(app_name) == std::wstring(L"explorer.exe"))
     boost::thread th([=]() {
       ::Sleep(100);
       if (_UpdateUICallback)
@@ -1033,7 +1033,8 @@ static Bool _RimeGetColor(RimeConfig* config,
     if (!rime_api->config_get_int(config, key.c_str(), &tmp)) {
       value = fallback;
       return False;
-    }
+    } else
+      value = tmp;
     make_opaque(value);
   }
   value = ConvertColorToAbgr(value, fmt);
@@ -1377,7 +1378,8 @@ static bool _UpdateUIStyleColor(RimeConfig* config,
     COLOR("label_color", style.label_text_color,
           blend_colors(style.candidate_text_color, style.candidate_back_color));
     COLOR("hilited_label_color", style.hilited_label_text_color,
-          blend_colors(style.candidate_text_color, style.candidate_back_color));
+          blend_colors(style.hilited_candidate_text_color,
+                       style.hilited_candidate_back_color));
     COLOR("comment_text_color", style.comment_text_color,
           style.label_text_color);
     COLOR("hilited_comment_text_color", style.hilited_comment_text_color,
